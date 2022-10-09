@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="icon.ico">
+    <title>To Do List</title>
+</head>
+<body onload="getTasks()">
+    <h1>To Do List</h1>
+    <div class="container">
+        <div class="NewTask">
+            <input type="text" id="newTask" placeholder="Enter Task Name">
+            <button id="addbtn" class="add" onclick="newTask()" >+</button>
+        </div>
+        <div class="tasklist" id="tasklist">
+            <h2 style="color:grey;" id="no-tasks">You Have no tasks.</h2>
+        </div>
+
+    </div>
+    <br/>
+    <span>Created by Ross Steventon 2022</span>
+</body>
+</html>
