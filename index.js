@@ -2,15 +2,30 @@ var taskcount = 0;//Tasks in list
 var list = [];
 
 
-
-
-function completeTask(id){ // completed tasks get style asigned (Toggle)
-    var element = document.getElementById("TB" + id).classList;
+function completeTask(id, fromlist){ // completed tasks get style asigned (Toggle)
+    var elm = "TB" + id;
+    console.log(fromlist);
+    var element = document.getElementById(elm).classList;
+    var completed = true;
     if(element.contains('completed')){
+        completed = false;
         element.remove('completed'); //Remove completed style
-        return;
+
+    }else{
+        element.add('completed');//Add completed style
     }
-    element.add('completed');//Add completed style
+    if(!fromlist){
+        console.log("changing complete state")
+        for(let i =0; i < list.length; i++){
+            if(list[i].id == id){
+               // console.log("Found array value : " + list[i].id);
+                list[i].completed = completed;
+                localStorage.clear();
+                localStorage.setItem('todos', JSON.stringify(list));
+                //list[i].remove();
+            }
+        }
+    }
 }
 
 function getTasks(){
@@ -23,12 +38,14 @@ function getTasks(){
     }
 });
     //Get any tasks saved in local storage
-    localStorage.clear();
+     //localStorage.clear();
     if(localStorage.getItem('todos')){
         list = JSON.parse(localStorage.getItem('todos'));
-        console.log(JSON.stringify(list));
+        console.log(list);
+        console.log("LIST LENGTH" + list.length);
+
         for(let i =0; i < list.length; i++){
-            generateDiv(list[i].TaskName, list[i].id);
+            generateDiv(list[i].TaskName, list[i].id, list[i].completed,true);
         }
     }
 }
@@ -40,37 +57,61 @@ function removeTask(id){
     if(taskcount== 0){
         document.getElementById('no-tasks').classList.remove("hidden");
     }
+
+    for(let i =0; i < list.length; i++){
+        if(list[i].id == id){
+            console.log("Found array value : " + list[i].id);
+            list.splice(i,1);
+            localStorage.clear();
+            localStorage.setItem('todos', JSON.stringify(list));
+            //list[i].remove();
+        }
+    }
 }
 
 function newTask(){
     var taskname = document.getElementById('newTask').value;
     if(taskname == "" && taskname.trim() == ''){ return;}
-    generateDiv(taskname, "none");
+    generateDiv(taskname, "none", false,false);
 }
 
 function generateUI(){ //Development test
     generateDiv("Example Task");
 }
 
-function generateDiv(name, idnum){
+function generateDiv(name, idnum, completed,fromlist){
+    var id;
     if(taskcount== 0){
         document.getElementById('no-tasks').classList.add("hidden");
     }
     if(idnum == "none"){
-        var id = Math.random().toString(36).slice(2, 7);
+         id = Math.random().toString(36).slice(2, 7);
         id= id.trim();
     }else{
-        var id = idnum;
+         id = idnum;
     }
+    console.log(id);
     var task = document.createElement('div');
     task.className = "TaskBox"
     task.id = "TB" + id;
-    task.innerHTML = '<h1>'+ name +'</h1><div class="buttons"><button class="Complete" onclick="completeTask(`'+String(id)+'`)">✔</button><button class="Delete" onclick="removeTask(`'+String(id)+'`)">🗑</button></div>';
+    task.innerHTML = '<h1>'+ name +'</h1><div class="buttons"><button class="Complete" onclick="completeTask(`'+ String(id) + '`, false)">✔</button><button class="Delete" onclick="removeTask(`'+String(id)+'`)">🗑</button></div>';
     document.getElementById('tasklist').append(task);
     console.log("New task Generated");
+
+    if(completed){
+        completeTask(id,true);
+    }
     taskcount++;
     document.getElementById('newTask').value = "";
-   // var task = {'id': + String(id.trim()) + `', 'TaskName':'` + name + `','completed': 'false'`};
-   // list.push(task);
-   // localStorage.setItem('todos', JSON.stringify(list));
+
+
+    if(!fromlist){
+        let newtask = {
+            id: id, 
+            TaskName: name,
+            completed: false
+        };
+        list.push(newtask);
+        localStorage.setItem('todos', JSON.stringify(list));
+    }
 }
